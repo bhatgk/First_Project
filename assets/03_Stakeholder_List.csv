@@ -1,0 +1,19 @@
+Name,Organization,Project Role,Department,Allocation %,Email,Notes
+Priya Raman,Acme Industrial,Executive Sponsor,Procurement,5,priya.raman@acme.example,CPO; chairs Steering Committee
+Daniel O'Connell,Acme Industrial,Business Sponsor,Indirect Procurement,15,daniel.oconnell@acme.example,VP Indirect; UAT sign-off authority
+Sara Lindqvist,Acme Industrial,Program Manager (Acme),Procurement Transformation,100,sara.lindqvist@acme.example,Primary day-to-day owner
+Marcus Chen,Bluewave Consulting,Program Manager (Partner),Delivery,100,marcus.chen@bluewave.example,Bluewave PM
+Helena Ruiz,Acme Industrial,PMO Lead,Procurement Transformation,50,helena.ruiz@acme.example,PMO governance & reporting
+Anika Patel,Bluewave Consulting,SLP Functional Lead,Functional,100,anika.patel@bluewave.example,Senior SLP consultant
+James Whitaker,Bluewave Consulting,Buying Functional Lead,Functional,100,james.whitaker@bluewave.example,Senior P2P consultant
+Yusuf Khalil,Bluewave Consulting,Integration Lead,Technical,100,yusuf.khalil@bluewave.example,CIG / SAP integration specialist
+Rina Takahashi,Acme Industrial,Data Lead,MDM,75,rina.takahashi@acme.example,Vendor master cleansing & migration
+Tom Becker,Acme Industrial,Security Lead,IT Security,25,tom.becker@acme.example,Okta SSO & access reviews
+Maya Greenfield,Bluewave Consulting,Test Lead,QA,100,maya.greenfield@bluewave.example,SIT planning & execution
+Olivia Park,Acme Industrial,Change Lead,HR / OCM,75,olivia.park@acme.example,Training & comms
+David Mensah,Bluewave Consulting,Support Lead,Managed Services,50,david.mensah@bluewave.example,Hypercare; transitions to BAU support
+Ravi Subramanian,Acme Industrial,Ariba Admin,Procurement Systems,100,ravi.subramanian@acme.example,Realm admin; tier-2 support post-go-live
+Karen Faulkner,Acme Industrial,Business UAT Lead,Indirect Procurement,40,karen.faulkner@acme.example,Coordinates business testers
+Hector Alvarez,Acme Industrial,Category Manager — IT,IT Sourcing,20,hector.alvarez@acme.example,SME for IT/Software qualification
+Lena Brandt,Acme Industrial,Category Manager — MRO,Operations,20,lena.brandt@acme.example,SME for MRO category & catalogs
+Felix Nguyen,Acme Industrial,Finance Controller,Finance,15,felix.nguyen@acme.example,Approval matrix sign-off

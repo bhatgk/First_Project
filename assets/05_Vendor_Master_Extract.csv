@@ -1,0 +1,24 @@
+Vendor_ID,Vendor_Name,Country,Tax_ID,Status,Last_Activity,Category,Primary_Contact_Email,Notes
+V-100245,Grainger Industrial Supply,US,36-1150280,Active,2026-05-22,MRO,enterprise@grainger.example,Preferred supplier
+V-100246,W.W. Grainger Inc,US,36-1150280,Active,2024-11-03,MRO,enterprise@grainger.example,Likely duplicate of V-100245
+V-100412,Staples Business Advantage,US,04-3390816,Active,2026-05-18,Office Supplies,corp.sales@staples.example,
+V-100977,Dell Technologies,US,74-2487834,Active,2026-04-30,IT/Software,enterprise@dell.example,PunchOut candidate
+V-101055,CDW LLC,US,36-3310735,Active,2026-05-12,IT/Software,sales@cdw.example,PunchOut candidate
+V-101300,Office Depot Inc,US,59-2663954,Inactive,2022-07-14,Office Supplies,,No activity > 3 yrs; candidate for archive
+V-101455,Acme Test Vendor — DO NOT USE,US,,Active,2019-03-02,Other,,Test record; flagged for deletion
+V-101799,Siemens AG,DE,DE129273398,Active,2026-05-09,Facilities,procurement@siemens.example,
+V-101800,Siemens Aktiengesellschaft,DE,DE129273398,Active,2025-01-22,Facilities,procurement@siemens.example,Duplicate of V-101799
+V-102100,Lufthansa Travel Solutions,DE,DE812773009,Active,2026-03-11,Travel-adjacent,corp.solutions@lh.example,
+V-102455,Tata Consultancy Services,IN,AAACT2727Q,Active,2026-05-24,Professional Services,enterprise.in@tcs.example,
+V-102456,TCS Limited,IN,AAACT2727Q,Active,2024-09-08,Professional Services,enterprise.in@tcs.example,Duplicate of V-102455
+V-102801,Petrobras Distribuidora,BR,34.274.233/0001-02,Active,2026-02-19,Logistics,procurement@br-distrib.example,Brazil NF-e fields required
+V-103002,Emirates Global Aluminium,AE,100012345600003,Active,2026-05-15,Logistics,procurement@ega.example,UAE VAT TRN
+V-103200,Local Plumbing Co (Plant 7),US,,Active,2023-12-01,MRO,,Single-PO supplier; consider blocking
+V-103445,FedEx Corporate Services,US,71-0427007,Active,2026-05-20,Logistics,corpacct@fedex.example,
+V-103600,UPS Supply Chain Solutions,US,95-1732075,Active,2026-05-19,Logistics,corpacct@ups.example,
+V-103900,Kaizen Cleaning Services,JP,1234567890123,Active,2026-04-02,Facilities,sales@kaizen.example,
+V-104150,Apex Lab Reagents,US,12-3456789,Active,2026-05-08,Lab & Sample,orders@apexlab.example,
+V-104300,Apex Lab Reagents LLC,US,12-3456789,Active,2025-11-14,Lab & Sample,orders@apexlab.example,Duplicate of V-104150
+V-104500,Global Marketing Partners,UK,GB123456789,Active,2026-04-25,Marketing,billing@gmp.example,
+V-104810,Anonymous Catering — Plant 3 Cafeteria,US,,Active,2024-02-08,Facilities,,Missing tax ID; manual setup
+V-105000,Bluewave Consulting,US,86-3344521,Active,2026-05-21,Professional Services,billing@bluewave.example,Implementation partner — self

@@ -1,6 +1,6 @@
 ---
 name: ariba-project-plan
-description: Generate a fully pre-populated SAP Ariba implementation project plan in Excel covering Supplier Lifecycle and Performance (SLP) and Ariba Buying. Use this skill whenever the user asks for an Ariba project plan, SLP/Buying rollout plan, SAP Ariba implementation schedule, WBS, Gantt, RACI, or RAID log for Ariba — including casual phrasings like "I need an Ariba plan in Excel", "create the SLP rollout plan", "draft the Ariba Buying implementation timeline", or "give me a project plan for our Ariba project". Trigger even if the user does not explicitly say "Excel" — the deliverable is always an .xlsx workbook. Do NOT use this skill for Ariba Sourcing, Contracts, or full Source-to-Pay scopes; this skill is scoped to SLP + Buying only.
+description: Generate a fully pre-populated SAP Ariba implementation project plan in Excel covering Supplier Lifecycle and Performance (SLP) and Ariba Buying. Use this skill whenever the user asks for an Ariba project plan, SLP/Buying rollout plan, SAP Ariba implementation schedule, WBS, Gantt, RACI, or RAID log for Ariba — including casual phrasings like "I need an Ariba plan in Excel", "create the SLP rollout plan", "draft the Ariba Buying implementation timeline", or "give me a project plan for our Ariba project". Also trigger when the user uploads a folder of Ariba project source documents (project charter, BRD, SOW, kickoff MoM, stakeholder list, vendor master extract, etc.) and asks Claude to "build the plan", "consolidate these", or "turn this into a project plan" — the skill knows how to read these sources, reconcile dates and scope, and produce the workbook. Trigger even if the user does not explicitly say "Excel" — the deliverable is always an .xlsx workbook. Do NOT use this skill for Ariba Sourcing, Contracts, or full Source-to-Pay scopes; this skill is scoped to SLP + Buying only.
 ---
 
 # SAP Ariba (SLP + Buying) Project Plan Generator
@@ -19,9 +19,66 @@ A single `.xlsx` workbook with **five sheets**, fully pre-populated with standar
 
 The workbook stacks on top of the `xlsx` skill — read `/mnt/skills/public/xlsx/SKILL.md` first for fonts, formula handling, recalculation, and verification rules. The content defaults below are specific to Ariba SLP + Buying.
 
-## Required inputs from the user
+## Reading source documents (if provided)
 
-Before generating, confirm these four items. If the user hasn't provided them, ask once in a single message:
+If the user uploads files or points to a folder (e.g. `/mnt/user-data/uploads/`), **always read the source documents before asking any questions**. Most of the "required inputs" below — and a lot of the project-specific content — can be lifted directly from these documents, and asking the user for things that are sitting in their own files is annoying.
+
+### Step 1 — Inventory the folder
+
+List every file the user has provided. Don't skip files because the name looks unfamiliar; Ariba project folders typically mix several document types:
+
+| Likely source | Typical filename hints | What to extract |
+|---|---|---|
+| Project Charter | "charter", "PID", "project initiation" | Client name, partner, sponsor, scope confirmation, dates, budget, assumptions, constraints |
+| BRD / SOW / Requirements | "BRD", "SOW", "requirements", "FRS" | Module scope confirmation (SLP + Buying), integration details, approval matrix, catalog strategy, training population sizes, open items |
+| Stakeholder list / RACI input | "stakeholder", "team", "org", "RACI" | Real names for the Owner column and the RACI sheet |
+| Kickoff MoM / meeting minutes | "MoM", "minutes", "kickoff", "SteerCo" | Confirmed decisions, action items (→ RAID), risks raised in meetings |
+| Vendor master / data extract | "vendor", "supplier", "master", "extract" | Data quality issues (duplicates, missing tax IDs, dormant records) → feeds Data workstream tasks and RAID risks |
+| Integration / architecture docs | "integration", "architecture", "CIG", "API" | SAP version, integration pattern, SSO/IdP — feeds Technical workstream and assumptions |
+| Cutover / training plans | "cutover", "training", "OCM", "change" | Wave plans, training population, hypercare staffing |
+
+Read each one with the appropriate tool: markdown/text/CSV files can be `view`'d directly; `.docx`/`.pdf` files need the `docx` / `pdf` skills (consult their SKILL.md files first). For CSVs, use pandas if the file is large.
+
+### Step 2 — Extract and reconcile
+
+Build a small in-memory summary covering:
+
+- **Client name** (from Charter or BRD)
+- **Implementation partner** (from Charter or SOW)
+- **Project start date** (from Charter; cross-check against Kickoff MoM)
+- **Go-live target date** (from Charter; cross-check against MoM)
+- **Sponsor + Program Managers + key role holders** (from Charter + Stakeholder list)
+- **Scope confirmation** — verify the project really is SLP + Buying only. If the sources mention Sourcing / Contracts / Invoicing as in-scope, **stop and flag this to the user** before generating; this skill does not cover those modules.
+- **Project-specific risks/assumptions/dependencies** to add on top of the defaults (e.g., a kickoff MoM that flags CIG-version risk, a vendor master with high duplicate rate, an open item about Brazil NF-e fields).
+- **Project-specific milestones or constraints** (e.g., year-end no-deploy windows, parallel programs, regulatory deadlines).
+
+**Reconcile contradictions explicitly.** If the Charter says a 24-week timeline but the kickoff date to go-live is only 19 weeks, that's a contradiction the user needs to know about — don't silently pick one. Default behavior:
+
+- If start date and go-live date are both given but the gap is shorter than the default 24 weeks, compress the phases proportionally rather than the defaults. Tell the user in the final summary message which phases were compressed and by how much.
+- If the gap is longer than 24 weeks, extend Explore and Realize proportionally (not Prepare/Deploy/Run, which are more fixed).
+- If sources disagree on any factual item (e.g., partner name appears differently in two files), prefer the **Project Charter** as the source of truth, and mention the discrepancy in the summary.
+
+### Step 3 — Only ask the user for what's actually missing
+
+After reading the sources, ask the user *only* for items you couldn't find. If the Charter contains every required input, skip the question step entirely and proceed to generation, but **tell the user what you extracted and from which file** before generating, so they can correct any misreads. Example:
+
+> "I read the Charter, BRD, Stakeholder list, Kickoff MoM, and Vendor master extract. Here's what I'll use: Client = Acme Industrial, Partner = Bluewave Consulting, Kickoff = 15 Jun 2026, Go-live = 30 Oct 2026 (≈19 weeks — I'll compress Explore and Realize by ~1 week each to fit). I'll also fold in 3 project-specific risks I found in the MoM. Proceed?"
+
+### Step 4 — Apply source-derived content to the right sheets
+
+| Sheet | What to pull from sources |
+|---|---|
+| WBS | Real owner names from the Stakeholder list (replace the default role labels); add a few project-specific tasks if the BRD calls out unusual scope items (e.g., a Brazil tax-fields branch in SLP registration) |
+| Gantt | Adjusts automatically once WBS dates are set |
+| RACI | Replace role labels with real names where the Stakeholder list gives a single owner per role; if multiple people hold a role (e.g., two Category Managers), add them as additional columns rather than merging |
+| RAID Log | Add project-specific risks/assumptions/dependencies on top of the defaults. Tag the source in the Notes column (e.g., "Source: Kickoff MoM, item AI-9") |
+| Milestones | Override default milestone dates with the Charter's dates if provided |
+
+If no source documents are provided, fall back to the question-based flow below.
+
+## Required inputs from the user (when no sources are provided)
+
+If the user has not uploaded source documents, confirm these four items. Ask once in a single message:
 
 1. **Project start date** (defaults to first Monday after today if not given)
 2. **Client / company name** (used in the title row; defaults to "Client")
@@ -201,20 +258,21 @@ Bold the Go-live row. Apply conditional formatting on Status column (same scheme
 ## Generation workflow
 
 1. **Read `/mnt/skills/public/xlsx/SKILL.md`** for the formula/recalc rules — this skill inherits all of them (Arial font, formulas not hardcoded values, run `scripts/recalc.py` after save, verify zero formula errors).
-2. Confirm the four required inputs with the user (one combined message, not four).
-3. Compute the phase date ranges from the start date (or backward from the go-live date).
-4. Build the workbook with `openpyxl`:
+2. **Check for source documents.** Look at `/mnt/user-data/uploads/` and anywhere else the user has pointed to. If sources exist, follow the "Reading source documents" section above to inventory, extract, and reconcile before doing anything else. Show the user what you extracted and from which file, and ask them to confirm before generating.
+3. **If no sources are provided**, confirm the four required inputs with the user (one combined message, not four).
+4. Compute the phase date ranges from the start date (or backward from the go-live date). If the gap between start and go-live differs from the default 24 weeks, compress or extend per the rules in "Reading source documents — Step 2".
+5. Build the workbook with `openpyxl`:
    - Create the five sheets in the order above.
    - Add a title row on each sheet: "SAP Ariba SLP + Buying Implementation Plan — {Client Name}" in bold, merged across the sheet header.
-   - Populate the WBS task list, computing Start/End per phase. Distribute task durations evenly within each phase unless a task obviously needs a specific slot (e.g., kickoff = Day 1, go-live = end of Deploy).
+   - Populate the WBS task list, computing Start/End per phase. Distribute task durations evenly within each phase unless a task obviously needs a specific slot (e.g., kickoff = Day 1, go-live = end of Deploy). Use real owner names from the Stakeholder source if available; otherwise use role labels.
    - Generate the Gantt with weekly columns and conditional-format bars.
-   - Populate the RACI exactly as specified.
-   - Populate the RAID log with the standard items, leaving issue rows blank.
-   - Populate the milestones with computed dates.
-5. Apply formatting: Arial font throughout, bold headers, frozen panes on each sheet, column widths sized so content is readable (typically 12–30 depending on column).
-6. Save to `/mnt/user-data/outputs/Ariba_SLP_Buying_Project_Plan_{Client}.xlsx`.
-7. Run `python /mnt/skills/public/xlsx/scripts/recalc.py <path>` and verify the JSON returns zero errors. Fix any errors and re-run.
-8. Call `present_files` with the workbook path. Keep the message short — one or two sentences summarizing what's in the workbook.
+   - Populate the RACI. If real names are available per role, replace role labels with names; if multiple people hold one role, add extra columns rather than merging.
+   - Populate the RAID log with the standard items **plus** any project-specific risks/assumptions/dependencies extracted from the source documents. Tag the source in the Notes column.
+   - Populate the milestones with computed dates, overriding defaults with Charter dates where given.
+6. Apply formatting: Arial font throughout, bold headers, frozen panes on each sheet, column widths sized so content is readable (typically 12–30 depending on column).
+7. Save to `/mnt/user-data/outputs/Ariba_SLP_Buying_Project_Plan_{Client}.xlsx`.
+8. Run `python /mnt/skills/public/xlsx/scripts/recalc.py <path>` and verify the JSON returns zero errors. Fix any errors and re-run.
+9. Call `present_files` with the workbook path. Keep the message short — one or two sentences summarizing what's in the workbook, and note any reconciliations or compressions you applied so the user can spot misreads.
 
 ## Things to be careful about
 
