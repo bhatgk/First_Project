@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import openpyxl; print\\('openpyxl', openpyxl.__version__\\)\")",
+      "Bash(py --version)",
+      "PowerShell(Get-Command python, python3, py -ErrorAction SilentlyContinue)",
+      "PowerShell(where.exe python 2>$null; where.exe py 2>$null; $env:PATH -split \";\" | Where-Object { $_ -match \"python|conda|anaconda\" })",
+      "PowerShell(& \"C:\\\\Users\\\\HP\\\\AppData\\\\Local\\\\Microsoft\\\\WindowsApps\\\\python.exe\" --version)",
+      "PowerShell(Get-ChildItem \"C:\\\\ProgramData\\\\Miniconda3\", \"C:\\\\ProgramData\\\\Anaconda3\", \"$env:USERPROFILE\\\\miniconda3\", \"$env:USERPROFILE\\\\anaconda3\", \"$env:USERPROFILE\\\\AppData\\\\Local\\\\Continuum\" -ErrorAction SilentlyContinue | Select-Object FullName)",
+      "PowerShell(node --version 2>$null)",
+      "PowerShell(& \"d:\\\\AI Learning\\\\Project Management\\\\First_Project\\\\generate_plan.ps1\")",
+      "PowerShell($f = Get-Item \"d:\\\\AI Learning\\\\Project Management\\\\First_Project\\\\Ariba_SLP_Buying_Project_Plan_Acme_Industrial.xlsx\"; \"Size: $\\([math]::Round\\($f.Length/1KB, 1\\)\\) KB | Modified: $\\($f.LastWriteTime\\)\")"
+    ]
+  }
+}
